@@ -1,6 +1,7 @@
-package com.sales.market.service;
+package com.sales.market.service.mail;
 
 import com.sales.market.dto.MailDto;
+import com.sales.market.service.UserService;
 import io.jsonwebtoken.lang.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -37,6 +39,16 @@ public class EmailService {
 
     @Autowired
     private UserService userService;
+
+    public void sendSimpleMessage(String to, String subject, String text) {
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("noreply@baeldung.com");
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(text);
+        mailSender.send(message);
+    }
 
     public void sendMail(MailDto mail) {
         new Thread(() -> {
