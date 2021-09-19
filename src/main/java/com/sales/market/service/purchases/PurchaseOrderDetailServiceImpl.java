@@ -19,4 +19,6 @@ public class PurchaseOrderDetailServiceImpl extends GenericServiceImpl<PurchaseO
     protected GenericRepository<PurchaseOrderDetail> getRepository() {
         return repository;
     }
+
+
 }

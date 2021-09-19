@@ -1,5 +1,6 @@
 package com.sales.market.model.purchases;
 
+import com.sales.market.dto.purchases.PurchaseOrderDto;
 import com.sales.market.model.ModelBase;
 
 import javax.persistence.*;
@@ -9,7 +10,8 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-public class PurchaseOrder extends ModelBase {
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = "orderNumber")})
+public class PurchaseOrder extends ModelBase<PurchaseOrderDto> {
 
     private String orderNumber;
 
