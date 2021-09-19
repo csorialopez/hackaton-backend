@@ -4,9 +4,20 @@
 
 package com.sales.market.model.purchases;
 
-import com.sales.market.model.ModelBase;
+import javax.persistence.*;
 
-public class ActionRequired extends ModelBase {
+import com.sales.market.model.ModelBase;
+import com.sales.market.dto.ActionRequiredDto;
+import com.sales.market.model.User;
+
+@Entity
+public class ActionRequired extends ModelBase<ActionRequiredDto> {
+
+    @ManyToOne(fetch = FetchType.LAZY)
     private PurchaseOrder purchaseOrder;
     private String notes;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
+    
 }
