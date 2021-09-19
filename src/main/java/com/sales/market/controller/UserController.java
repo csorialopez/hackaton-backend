@@ -3,7 +3,7 @@ package com.sales.market.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sales.market.dto.*;
 import com.sales.market.model.User;
-import com.sales.market.service.EmailService;
+import com.sales.market.service.mail.EmailService;
 import com.sales.market.service.GenericService;
 import com.sales.market.service.TokenService;
 import com.sales.market.service.UserService;
