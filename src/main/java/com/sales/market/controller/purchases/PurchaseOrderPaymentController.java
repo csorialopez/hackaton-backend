@@ -29,7 +29,7 @@ public class PurchaseOrderPaymentController extends GenericController<PurchaseOr
         return service;
     }
 
-    @PostMapping
+    @PostMapping("/registration")
     public PurchaseOrderPaymentDto registerPayment (@RequestBody PurchaseOrderPaymentVo purchaseOrderPaymentVo) {
         PurchaseOrderPayment purchaseOrderPayment = service.registerOrderPayment(purchaseOrderPaymentVo);
         return toDto(purchaseOrderPayment);
