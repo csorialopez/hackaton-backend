@@ -1,6 +1,8 @@
 package com.sales.market.model.purchases;
 
 import com.sales.market.model.ModelBase;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -8,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Getter
+@Setter
 @Entity
 public class PurchaseOrder extends ModelBase {
 

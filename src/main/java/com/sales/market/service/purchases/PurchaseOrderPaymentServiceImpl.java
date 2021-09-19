@@ -2,11 +2,12 @@
  * @author: Antony B. Maceda C.
  */
 
-package com.sales.market.service;
+package com.sales.market.service.purchases;
 
 import com.sales.market.model.purchases.*;
-import com.sales.market.repository.PurchaseOrderPaymentRepository;
+import com.sales.market.repository.purchases.PurchaseOrderPaymentRepository;
 import com.sales.market.repository.GenericRepository;
+import com.sales.market.service.GenericServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
