@@ -15,6 +15,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@Getter
+@Setter
 public class ActionRequired extends ModelBase<ActionRequiredDto> {
 
     @ManyToOne(fetch = FetchType.LAZY)
