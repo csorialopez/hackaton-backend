@@ -3,8 +3,9 @@
  */
 
 package com.sales.market.controller;
+
 import com.sales.market.dto.PurchaseOrderPaymentDto;
-import com.sales.market.model.PurchaseOrderPayment;
+import com.sales.market.model.purchases.PurchaseOrderPayment;
 import com.sales.market.service.PurchaseOrderPaymentService;
 import com.sales.market.service.GenericService;
 import org.springframework.util.StringUtils;
@@ -17,15 +18,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/purchaseorderpayments")
-public class PurchaseOrderPaymentController extends GenericController<PurchaseOrderPayment, PurchaseOrderPaymentDto> {
+public class PurchaseOrderPaymentController {
     private PurchaseOrderPaymentService service;
 
     public PurchaseOrderPaymentController(PurchaseOrderPaymentService service) {
         this.service = service;
     }
 
-    @Override
-    protected GenericService getService() {
-        return service;
+    public PurchaseOrderPaymentDto registerPayment () {
+        return null;
     }
+
 }

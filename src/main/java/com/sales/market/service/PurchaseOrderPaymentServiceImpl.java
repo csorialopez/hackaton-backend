@@ -3,13 +3,16 @@
  */
 
 package com.sales.market.service;
-import com.sales.market.model.PurchaseOrderPayment;
-import com.sales.market.repositories.PurchaseOrderPaymentRepository;
-import com.sales.market.repositories.GenericRepository;
+
+import com.sales.market.model.purchases.*;
+import com.sales.market.repository.PurchaseOrderPaymentRepository;
+import com.sales.market.repository.GenericRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @Service
-public class PurchaseOrderPaymentServiceImpl extends GenericServiceImpl<PurchaseOrderPayment> implements PurchaseOrderPaymentService{
+public class PurchaseOrderPaymentServiceImpl extends GenericServiceImpl<PurchaseOrderPayment> implements PurchaseOrderPaymentService {
     private final PurchaseOrderPaymentRepository repository;
 
     public PurchaseOrderPaymentServiceImpl(PurchaseOrderPaymentRepository repository) {
@@ -19,5 +22,24 @@ public class PurchaseOrderPaymentServiceImpl extends GenericServiceImpl<Purchase
     @Override
     protected GenericRepository<PurchaseOrderPayment> getRepository() {
         return repository;
+    }
+
+    @Override
+    public PurchaseOrderPayment registerOrderPayment(PurchaseOrderPayment purchaseOrderPayment) {
+        updatePurchaseOrderStatus(purchaseOrderPayment);
+        return repository.save(purchaseOrderPayment);
+    }
+
+    public PurchaseOrder updatePurchaseOrderStatus (PurchaseOrderPayment purchaseOrderPayment) {
+        PurchaseOrder purchaseOrder = purchaseOrderPayment.getPurchaseOrder();
+        if (purchaseOrderPayment.getPurchaseOrderPaymentKind() == PurchaseOrderPaymentKind.ADVANCE_PAYMENT) {
+            purchaseOrder.setBalanceAmount(purchaseOrder.getBalanceAmount().subtract(purchaseOrderPayment.getPayAmount()));
+            purchaseOrder.setPaymentStatus(PurchaseOrderPaymentStatus.PARTIAL_PAYMENT);
+        } else if (purchaseOrderPayment.getPurchaseOrderPaymentKind() == PurchaseOrderPaymentKind.LIQUIDATION_PAYMENT) {
+            purchaseOrder.setBalanceAmount(BigDecimal.ZERO);
+            purchaseOrder.setPaymentStatus(PurchaseOrderPaymentStatus.FULLY_PAID);
+            purchaseOrder.setState(PurchaseOrderState.LIQ);
+        }
+        return purchaseOrder;
     }
 }
