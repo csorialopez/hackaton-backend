@@ -8,6 +8,8 @@ import com.sales.market.model.purchases.*;
 import com.sales.market.repository.purchases.PurchaseOrderPaymentRepository;
 import com.sales.market.repository.GenericRepository;
 import com.sales.market.service.GenericServiceImpl;
+import com.sales.market.service.PurchaseOrderService;
+import com.sales.market.vo.PurchaseOrderPaymentVo;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -15,9 +17,11 @@ import java.math.BigDecimal;
 @Service
 public class PurchaseOrderPaymentServiceImpl extends GenericServiceImpl<PurchaseOrderPayment> implements PurchaseOrderPaymentService {
     private final PurchaseOrderPaymentRepository repository;
+    private final PurchaseOrderService purchaseOrderService;
 
-    public PurchaseOrderPaymentServiceImpl(PurchaseOrderPaymentRepository repository) {
+    public PurchaseOrderPaymentServiceImpl(PurchaseOrderPaymentRepository repository, PurchaseOrderService purchaseOrderService) {
         this.repository = repository;
+        this.purchaseOrderService = purchaseOrderService;
     }
 
     @Override
@@ -26,21 +30,19 @@ public class PurchaseOrderPaymentServiceImpl extends GenericServiceImpl<Purchase
     }
 
     @Override
-    public PurchaseOrderPayment registerOrderPayment(PurchaseOrderPayment purchaseOrderPayment) {
-        updatePurchaseOrderStatus(purchaseOrderPayment);
+    public PurchaseOrderPayment registerOrderPayment(PurchaseOrderPaymentVo purchaseOrderPaymentvo) {
+        PurchaseOrder purchaseOrder = purchaseOrderService.findById(purchaseOrderPaymentvo.getPurchaseOrderId());
+        PurchaseOrderPayment purchaseOrderPayment = new PurchaseOrderPayment();
+        purchaseOrderPayment.setPayAmount(new BigDecimal(purchaseOrderPaymentvo.getPayAmount()));
+        purchaseOrderPayment.setDescription(purchaseOrderPaymentvo.getDescription());
+        if (purchaseOrderService.verifyPurchaseOrderPaymentKindIsLiquidation(new BigDecimal(purchaseOrderPaymentvo.getPayAmount()), purchaseOrderPaymentvo.getPurchaseOrderId())) {
+            purchaseOrderPayment.setPurchaseOrderPaymentKind(PurchaseOrderPaymentKind.LIQUIDATION_PAYMENT);
+        } else {
+            purchaseOrderPayment.setPurchaseOrderPaymentKind(PurchaseOrderPaymentKind.ADVANCE_PAYMENT);
+        }
+        purchaseOrderPayment.setPurchaseOrder(purchaseOrder);
+        purchaseOrderService.updatePurchaseOrderStatus(purchaseOrderPayment);
         return repository.save(purchaseOrderPayment);
     }
 
-    public PurchaseOrder updatePurchaseOrderStatus (PurchaseOrderPayment purchaseOrderPayment) {
-        PurchaseOrder purchaseOrder = purchaseOrderPayment.getPurchaseOrder();
-        if (purchaseOrderPayment.getPurchaseOrderPaymentKind() == PurchaseOrderPaymentKind.ADVANCE_PAYMENT) {
-            purchaseOrder.setBalanceAmount(purchaseOrder.getBalanceAmount().subtract(purchaseOrderPayment.getPayAmount()));
-            purchaseOrder.setPaymentStatus(PurchaseOrderPaymentStatus.PARTIAL_PAYMENT);
-        } else if (purchaseOrderPayment.getPurchaseOrderPaymentKind() == PurchaseOrderPaymentKind.LIQUIDATION_PAYMENT) {
-            purchaseOrder.setBalanceAmount(BigDecimal.ZERO);
-            purchaseOrder.setPaymentStatus(PurchaseOrderPaymentStatus.FULLY_PAID);
-            purchaseOrder.setState(PurchaseOrderState.LIQ);
-        }
-        return purchaseOrder;
-    }
 }
