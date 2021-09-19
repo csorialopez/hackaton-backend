@@ -1,12 +1,12 @@
 package com.sales.market.service.purchases;
 
-import com.sales.market.model.purchases.PurchaseOrder;
-import com.sales.market.model.purchases.ActionRequired;
+import com.sales.market.model.purchases.*;
 import com.sales.market.repository.GenericRepository;
 import com.sales.market.repository.purchases.PurchaseOrderRepository;
-import com.sales.market.model.purchases.PurchaseOrderState;
 import com.sales.market.service.GenericServiceImpl;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 public class PurchaseOrderServiceImpl extends GenericServiceImpl<PurchaseOrder> implements PurchaseOrderService {
@@ -26,7 +26,7 @@ public class PurchaseOrderServiceImpl extends GenericServiceImpl<PurchaseOrder> 
     }
 
     @Override
-    public PurchaseOrder save( PurchaseOrder model){
+    public PurchaseOrder save(PurchaseOrder model) {
         purchaseOrderDetailService.saveAll(model.getPurchaseOrderDetailList());
         model.setState(PurchaseOrderState.PEN);
         PurchaseOrder saveOrder = repository.save(model);
@@ -41,5 +41,18 @@ public class PurchaseOrderServiceImpl extends GenericServiceImpl<PurchaseOrder> 
         ActionRequired actionRequired = new ActionRequired(purchaseOrder, notes);
         actionRequiredService.save(actionRequired);
         return findById(purchaseOrder.getId());
+    }
+
+    @Override
+    public void updatePayment(Long id, PurchaseOrderPaymentStatus paymentStatus, BigDecimal payAmount) {
+        PurchaseOrder purchaseOrder = findById(id);
+        purchaseOrder.setPaymentStatus(paymentStatus);
+        if (paymentStatus.equals(PurchaseOrderPaymentStatus.FULLY_PAID)) {
+            purchaseOrder.setState(PurchaseOrderState.LIQ);
+            purchaseOrder.setBalanceAmount(BigDecimal.ZERO);
+        } else {
+            purchaseOrder.setBalanceAmount(purchaseOrder.getBalanceAmount().subtract(payAmount));
+        }
+        save(purchaseOrder);
     }
 }
