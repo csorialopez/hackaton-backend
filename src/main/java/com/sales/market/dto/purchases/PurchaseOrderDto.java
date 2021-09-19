@@ -1,5 +1,6 @@
-package com.sales.market.dto;
+package com.sales.market.dto.purchases;
 
+import com.sales.market.dto.DtoBase;
 import com.sales.market.model.purchases.PurchaseOrder;
 import com.sales.market.model.purchases.PurchaseOrderPaymentStatus;
 import com.sales.market.model.purchases.PurchaseOrderReceivedType;
