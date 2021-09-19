@@ -1,14 +1,13 @@
 package com.sales.market.service;
 
-import com.sales.market.exception.NotFoundException;
+import com.sales.market.exception.purchases.GenericException;
 import com.sales.market.model.purchases.*;
 import com.sales.market.repository.GenericRepository;
 import com.sales.market.repository.PurchaseOrderRepository;
-import com.sales.market.vo.PurchaseOrderPaymentVo;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 @Service
 public class PurchaseOrderServiceImpl extends GenericServiceImpl<PurchaseOrder> implements PurchaseOrderService {
@@ -64,7 +63,7 @@ public class PurchaseOrderServiceImpl extends GenericServiceImpl<PurchaseOrder> 
             return false;
         }
         if (balanceUpdated.compareTo(BigDecimal.ZERO) == -1) {
-            throw new RuntimeException("paga de mas");
+            throw new GenericException("The payment amount is greater thar the required. You paid " + payAmount + " but the required amount is only " + purchaseOrder.getBalanceAmount(), HttpStatus.BAD_REQUEST);
         }
         return false;
     }
