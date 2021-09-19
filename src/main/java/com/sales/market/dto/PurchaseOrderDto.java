@@ -1,54 +1,24 @@
-package com.sales.market.model.purchases;
+package com.sales.market.dto;
 
-import com.sales.market.model.ModelBase;
+import com.sales.market.model.purchases.PurchaseOrder;
+import com.sales.market.model.purchases.PurchaseOrderPaymentStatus;
+import com.sales.market.model.purchases.PurchaseOrderReceivedType;
+import com.sales.market.model.purchases.PurchaseOrderState;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-@Entity
-public class PurchaseOrder extends ModelBase {
-
+public class PurchaseOrderDto extends DtoBase<PurchaseOrder> {
     private String orderNumber;
-
-    @Temporal(TemporalType.TIMESTAMP)
     private Date date;
-
-    @Enumerated(EnumType.STRING)
     private PurchaseOrderState state;
-
-    @Enumerated(EnumType.STRING)
     private PurchaseOrderReceivedType receivedType;
-
     private String providerCode;
-
-    // es igual a descripcion o comentarios
     private String gloss;
-
-    @Temporal(TemporalType.DATE)
     private Date receptionDate;
-
-    @Column(precision = 16, scale = 2)
-    private BigDecimal totalAmount = BigDecimal.ZERO;
-
-    @Transient
-    private PurchaseOrderDetail defaultDetail = new PurchaseOrderDetail();
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Provider provider;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "purchaseOrder", cascade = CascadeType.ALL)
-    @OrderBy("detailNumber asc")
-    private List<PurchaseOrderDetail> purchaseOrderDetailList = new ArrayList<PurchaseOrderDetail>(0);
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
+    private BigDecimal totalAmount;
+    private BigDecimal balanceAmount;
     private PurchaseOrderPaymentStatus paymentStatus;
-
-    @Column(nullable = false, precision = 16, scale = 2)
-    private BigDecimal balanceAmount = BigDecimal.ZERO;
 
     public String getOrderNumber() {
         return orderNumber;
@@ -114,28 +84,12 @@ public class PurchaseOrder extends ModelBase {
         this.totalAmount = totalAmount;
     }
 
-    public PurchaseOrderDetail getDefaultDetail() {
-        return defaultDetail;
+    public BigDecimal getBalanceAmount() {
+        return balanceAmount;
     }
 
-    public void setDefaultDetail(PurchaseOrderDetail defaultDetail) {
-        this.defaultDetail = defaultDetail;
-    }
-
-    public Provider getProvider() {
-        return provider;
-    }
-
-    public void setProvider(Provider provider) {
-        this.provider = provider;
-    }
-
-    public List<PurchaseOrderDetail> getPurchaseOrderDetailList() {
-        return purchaseOrderDetailList;
-    }
-
-    public void setPurchaseOrderDetailList(List<PurchaseOrderDetail> purchaseOrderDetailList) {
-        this.purchaseOrderDetailList = purchaseOrderDetailList;
+    public void setBalanceAmount(BigDecimal balanceAmount) {
+        this.balanceAmount = balanceAmount;
     }
 
     public PurchaseOrderPaymentStatus getPaymentStatus() {
@@ -144,14 +98,6 @@ public class PurchaseOrder extends ModelBase {
 
     public void setPaymentStatus(PurchaseOrderPaymentStatus paymentStatus) {
         this.paymentStatus = paymentStatus;
-    }
-
-    public BigDecimal getBalanceAmount() {
-        return balanceAmount;
-    }
-
-    public void setBalanceAmount(BigDecimal balanceAmount) {
-        this.balanceAmount = balanceAmount;
     }
 
 }
