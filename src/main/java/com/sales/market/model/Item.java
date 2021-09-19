@@ -4,8 +4,12 @@
 
 package com.sales.market.model;
 
+import com.sales.market.model.purchases.ProviderItem;
+
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import java.util.List;
 
 @Entity
 public class Item extends ModelBase {
@@ -14,6 +18,16 @@ public class Item extends ModelBase {
     private Byte[] image;
     @OneToOne(targetEntity = SubCategory.class)
     private SubCategory subCategory;
+    @OneToMany(mappedBy = "item")
+    private List<ProviderItem> providerItemList;
+
+    public List<ProviderItem> getProviderItemList() {
+        return providerItemList;
+    }
+
+    public void setProviderItemList(List<ProviderItem> providerItemList) {
+        this.providerItemList = providerItemList;
+    }
 
     public String getName() {
         return name;
