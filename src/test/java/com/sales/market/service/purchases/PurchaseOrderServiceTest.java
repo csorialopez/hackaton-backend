@@ -111,6 +111,7 @@ class PurchaseOrderServiceTest {
         providerItem.setPrice(new BigDecimal((7)));
         providerItem.setMeasureUnit(measureUnit);
         providerItem.setProvider(provider1);
+        providerItemService.save(providerItem);
 
         ProviderItem providerItem1 =  new ProviderItem();
         providerItem1.setItem(item1);
@@ -118,6 +119,7 @@ class PurchaseOrderServiceTest {
         providerItem1.setPrice(new BigDecimal((5)));
         providerItem1.setMeasureUnit(measureUnit);
         providerItem1.setProvider(provider1);
+        providerItemService.save(providerItem1);
 
         ProviderItem providerItem2 =  new ProviderItem();
         providerItem1.setItem(item2);
@@ -125,6 +127,7 @@ class PurchaseOrderServiceTest {
         providerItem1.setPrice(new BigDecimal((10)));
         providerItem1.setMeasureUnit(measureUnit);
         providerItem1.setProvider(provider2);
+        providerItemService.save(providerItem2);
 
         List<PurchaseOrder> listaPurchases = purchaseOrderService.solicitarOrden(itemInventoryService.getItemsLowerBoundery(),"000001");
         assertEquals(listaPurchases.size(), 1);
