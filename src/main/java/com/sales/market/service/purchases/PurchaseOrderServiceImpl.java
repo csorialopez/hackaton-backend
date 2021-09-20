@@ -54,8 +54,10 @@ public class PurchaseOrderServiceImpl extends GenericServiceImpl<PurchaseOrder> 
                 }
             });
             purchaseOrders.add(createPurchaseOrder(orderDetails1, provider));
+
         }));
-        return saveAll(purchaseOrders);
+//        return super.saveAll(purchaseOrders);
+        return purchaseOrders;
     }
 
     private BigDecimal getTotalAmountDetail(List<PurchaseOrderDetail> listaItems){
@@ -135,6 +137,8 @@ public class PurchaseOrderServiceImpl extends GenericServiceImpl<PurchaseOrder> 
             orderDetail.setMeasureUnit(providerItem.getMeasureUnit());
             orderDetail.setTotalAmount(quantity.multiply(providerItem.getPrice()));
             orderDetail.setProvider(providerItem.getProvider());
+            orderDetail.setUnitCost(providerItem.getPrice());
+            orderDetail.setQuantity(quantity);
             providers.add(providerItem.getProvider());
             orderDetails.add(orderDetail);
             item.setStockQuantity(item.getStockQuantity().add(quantity));
@@ -146,7 +150,7 @@ public class PurchaseOrderServiceImpl extends GenericServiceImpl<PurchaseOrder> 
     private PurchaseOrder createPurchaseOrder ( List<PurchaseOrderDetail> listDetails, Provider provider) {
         String generatedString = RandomStringUtils.randomAlphanumeric(12);
         PurchaseOrder purchase = new PurchaseOrder();
-        purchase.setPurchaseOrderDetailList(purchaseOrderDetailService.saveAll(listDetails));
+        purchase.setPurchaseOrderDetailList(listDetails);
         purchase.setOrderNumber(generatedString);
         purchase.setDate(Date.from(Instant.now()));
         purchase.setState(PurchaseOrderState.PEN);
@@ -156,6 +160,7 @@ public class PurchaseOrderServiceImpl extends GenericServiceImpl<PurchaseOrder> 
         purchase.setBalanceAmount(BigDecimal.ZERO);
         purchase.setProvider(provider);
         purchase.setProviderCode(provider.getCode());
-        return purchase;
+
+        return save(purchase);
     }
 }

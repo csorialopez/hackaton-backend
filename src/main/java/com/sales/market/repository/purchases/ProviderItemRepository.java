@@ -9,8 +9,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ProviderItemRepository extends GenericRepository<ProviderItem> {
-    @Query("select min(provider.price) from ProviderItem provider where provider.item=:item ")
-    ProviderItem getProviderItemsBy(@Param("item") Item item);
+
+    @Query("select  providerItem  from  ProviderItem  providerItem  join fetch providerItem.provider prov " +
+            "where providerItem.price=(select min(provider.price) from ProviderItem provider where provider.item=:item) ")
+    List<ProviderItem> getProviderItemsBy(@Param("item") Item item);
 
 
 }

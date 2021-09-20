@@ -28,7 +28,10 @@ public class ProviderItemServiceImpl extends GenericServiceImpl<ProviderItem> im
     }
 
     public ProviderItem getProviderItemsBy(Item item) {
-        return repository.getProviderItemsBy(item);
+        List<ProviderItem> providerItems =repository.getProviderItemsBy(item);
+        return providerItems.isEmpty()
+                ?null
+                :providerItems.get(0);
     }
 
     @Override
