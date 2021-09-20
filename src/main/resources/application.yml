@@ -6,6 +6,9 @@ spring:
     console:
       enabled: true
 
+  profiles:
+    active: default
+
   datasource:
     url: jdbc:h2:mem:testdb
 

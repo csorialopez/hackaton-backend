@@ -12,9 +12,9 @@ import com.sales.market.model.User;
 import lombok.Getter;
 import lombok.Setter;
 
+@Entity
 @Getter
 @Setter
-@Entity
 public class ActionRequired extends ModelBase<ActionRequiredDto> {
 
     @ManyToOne(fetch = FetchType.LAZY)

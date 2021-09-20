@@ -2,6 +2,7 @@ package com.sales.market.config;
 
 import com.sales.market.dto.OperationResultDto;
 import com.sales.market.exception.NotFoundException;
+import com.sales.market.exception.purchases.GenericException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,11 @@ public class GlobalDefaultExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalDefaultExceptionHandler.class);
 
     public static final String ERROR_PROCESSING_REQUEST = "No preview available";
+
+    @ExceptionHandler(value = { GenericException.class})
+    public ResponseEntity<String> handleGenericException (GenericException genericException) {
+        return new ResponseEntity<String>(genericException.getMessage(), genericException.getHttpStatus());
+    }
 
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<Object> handleAllExceptions(Exception e) {

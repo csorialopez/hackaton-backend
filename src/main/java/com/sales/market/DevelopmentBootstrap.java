@@ -5,12 +5,13 @@
 package com.sales.market;
 
 import com.sales.market.model.*;
+import com.sales.market.model.purchases.Customer;
 import com.sales.market.model.purchases.MeasureUnit;
 import com.sales.market.model.purchases.Provider;
-import com.sales.market.model.purchases.ProviderItem;
 import com.sales.market.repository.BuyRepository;
 import com.sales.market.repository.EmployeeRepository;
 import com.sales.market.service.*;
+import com.sales.market.service.purchases.CustomerService;
 import com.sales.market.service.purchases.MeasureUnitService;
 import com.sales.market.service.purchases.ProviderService;
 import io.micrometer.core.instrument.util.IOUtils;
@@ -39,6 +40,7 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
     private final EmployeeRepository employeeRepository;
     private final UserService userService;
     private final RoleService roleService;
+    private final CustomerService customerService;
     private final MeasureUnitService measureUnitService;
 
     SubCategory beverageSubCat = null;
@@ -63,6 +65,10 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
         persistItemInstances(maltinItem);
         initializeRoles();
         initializeEmployees();
+
+
+        //hackaton
+        persistCustomer();
         createProvider();
         persistMeasureUnit();
     }
@@ -73,6 +79,18 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
         measureUnit.setDescription("Unidad de medida");
         measureUnit.setMeasureUnitCode("code1");
         measureUnitService.save(measureUnit);
+    }
+
+    private void persistCustomer() {
+        Customer customer = new Customer();
+        customer.setEmail("henry.zrz@gmail.com");
+        customer.setNumber("1234");
+        customerService.save(customer);
+
+        Customer customer2 = new Customer();
+        customer2.setEmail("arty19972013@gmail.com");
+        customer2.setNumber("00999");
+        customerService.save(customer2);
     }
 
     private void initializeRoles() {
