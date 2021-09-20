@@ -25,10 +25,6 @@ public class ProviderItem extends ModelBase<ProviderItemDto> {
 
     private String providerItemCode;
 
-    private String providerCode;
-
-    private String itemCode;
-
     @OneToOne(targetEntity = MeasureUnit.class)
     private MeasureUnit measureUnit;
 

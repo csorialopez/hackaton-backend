@@ -39,6 +39,7 @@ public class PurchaseOrderServiceImpl extends GenericServiceImpl<PurchaseOrder> 
         return repository;
     }
 
+    @Override
     public List<PurchaseOrder> solicitarOrden(List<ItemInventory> listaItems, String numberPurchaseOrder) {
         List<PurchaseOrderDetail>orderDetails = getOrderDetailsByItem(listaItems);
         List<PurchaseOrder> purchaseOrders = new ArrayList<>();
