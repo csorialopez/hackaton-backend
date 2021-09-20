@@ -5,9 +5,11 @@
 package com.sales.market;
 
 import com.sales.market.model.*;
+import com.sales.market.model.purchases.Customer;
 import com.sales.market.repository.BuyRepository;
 import com.sales.market.repository.EmployeeRepository;
 import com.sales.market.service.*;
+import com.sales.market.service.purchases.CustomerService;
 import io.micrometer.core.instrument.util.IOUtils;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -30,6 +32,7 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
     private EmployeeRepository employeeRepository;
     private UserService userService;
     private RoleService roleService;
+    private CustomerService customerService;
 
     SubCategory beverageSubCat = null;
 
@@ -39,7 +42,8 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
 
     public DevelopmentBootstrap(BuyRepository buyRepository, CategoryService categoryService,
             SubCategoryService subCategoryService, ItemService itemService, ItemInstanceService itemInstanceService,
-            EmployeeRepository employeeRepository, UserService userService, RoleService roleService) {
+            EmployeeRepository employeeRepository, UserService userService, RoleService roleService,
+                                CustomerService customerService) {
         this.buyRepository = buyRepository;
         this.categoryService = categoryService;
         this.subCategoryService = subCategoryService;
@@ -48,6 +52,7 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
         this.employeeRepository = employeeRepository;
         this.userService = userService;
         this.roleService = roleService;
+        this.customerService = customerService;
     }
 
     @Override
@@ -68,6 +73,21 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
         persistItemInstances(maltinItem);
         initializeRoles();
         initializeEmployees();
+
+        //hackaton
+        persistCustomer();
+    }
+
+    private void persistCustomer() {
+        Customer customer = new Customer();
+        customer.setEmail("henry.zrz@gmail.com");
+        customer.setNumber("1234");
+        customerService.save(customer);
+
+        Customer customer2 = new Customer();
+        customer2.setEmail("prueba@prueba.com");
+        customer2.setNumber("00999");
+        customerService.save(customer2);
     }
 
     private void initializeRoles() {

@@ -12,8 +12,6 @@ import com.sales.market.model.User;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
 @Entity
 @Getter
 @Setter
