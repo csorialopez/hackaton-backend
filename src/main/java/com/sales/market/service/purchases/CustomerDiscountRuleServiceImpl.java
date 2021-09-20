@@ -12,6 +12,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -30,6 +31,8 @@ public class CustomerDiscountRuleServiceImpl extends GenericServiceImpl<Customer
 
     @Override
     public CustomerDiscountRule save(CustomerDiscountRule model) {
+        if (model.getAmount().compareTo(new BigDecimal("50")) == 1){
+        }
         model =  super.save(model);
         List<Customer> customers = customerService.findAll();
         List<CustomerDiscount> discounts = new LinkedList<>();

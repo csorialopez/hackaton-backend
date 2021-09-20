@@ -85,7 +85,7 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
         customerService.save(customer);
 
         Customer customer2 = new Customer();
-        customer2.setEmail("prueba@prueba.com");
+        customer2.setEmail("arty19972013@gmail.com");
         customer2.setNumber("00999");
         customerService.save(customer2);
     }
