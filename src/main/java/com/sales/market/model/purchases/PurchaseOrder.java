@@ -30,7 +30,6 @@ public class PurchaseOrder extends ModelBase<PurchaseOrderDto> {
 
     private String providerCode;
 
-    // es igual a descripcion o comentarios
     private String gloss;
 
     @Temporal(TemporalType.DATE)
@@ -38,9 +37,6 @@ public class PurchaseOrder extends ModelBase<PurchaseOrderDto> {
 
     @Column(precision = 16, scale = 2)
     private BigDecimal totalAmount = BigDecimal.ZERO;
-
-//    @Transient
-//    private PurchaseOrderDetail defaultDetail = new PurchaseOrderDetail();
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Provider provider;

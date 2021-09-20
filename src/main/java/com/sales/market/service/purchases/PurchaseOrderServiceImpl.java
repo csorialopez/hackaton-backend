@@ -46,7 +46,7 @@ public class PurchaseOrderServiceImpl extends GenericServiceImpl<PurchaseOrder> 
     public List<PurchaseOrder> solicitarOrden(List<ItemInventory> listaItems) {
         List<PurchaseOrderDetail>orderDetails = getOrderDetailsByItem(listaItems);
         List<PurchaseOrder> purchaseOrders = new ArrayList<>();
-        providers.stream().forEach((provider -> {
+        providers.forEach((provider -> {
             List<PurchaseOrderDetail> orderDetails1 = new ArrayList<>();
             orderDetails.forEach(purchaseOrderDetail -> {
                 if (purchaseOrderDetail.getProvider() == provider){
@@ -56,7 +56,6 @@ public class PurchaseOrderServiceImpl extends GenericServiceImpl<PurchaseOrder> 
             purchaseOrders.add(createPurchaseOrder(orderDetails1, provider));
 
         }));
-//        return super.saveAll(purchaseOrders);
         return purchaseOrders;
     }
 
@@ -157,7 +156,7 @@ public class PurchaseOrderServiceImpl extends GenericServiceImpl<PurchaseOrder> 
         purchase.setReceivedType(PurchaseOrderReceivedType.NR);
         purchase.setPaymentStatus(PurchaseOrderPaymentStatus.NO_PAYMENT);
         purchase.setTotalAmount(getTotalAmountDetail(listDetails));
-        purchase.setBalanceAmount(BigDecimal.ZERO);
+        purchase.setBalanceAmount(getTotalAmountDetail(listDetails));
         purchase.setProvider(provider);
         purchase.setProviderCode(provider.getCode());
 

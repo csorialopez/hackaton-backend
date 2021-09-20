@@ -50,14 +50,6 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         System.out.println("evento de spring");
-        /*   duplicacion de codigo
-        Buy buy = new Buy();
-        buy.setValue(BigDecimal.TEN);
-        buyRespository.save(buy);
-        Buy buy2 = new Buy();
-        buy2.setValue(BigDecimal.ONE);
-        buyRespository.save(buy);*/
-
         persistBuy(BigDecimal.TEN);
         persistBuy(BigDecimal.ONE);
         persistCategoriesAndSubCategories();
@@ -67,8 +59,7 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
         initializeEmployees();
 
 
-        //hackaton
-        persistCustomer();
+          persistCustomer();
         createProvider();
         persistMeasureUnit();
     }
@@ -83,7 +74,7 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
 
     private void persistCustomer() {
         Customer customer = new Customer();
-        customer.setEmail("henry.zrz@gmail.com");
+        customer.setEmail("csorialopez11@gmail.com");
         customer.setNumber("1234");
         customerService.save(customer);
 
@@ -168,11 +159,7 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
         item.setCode("B-MALTIN");
         item.setName("MALTIN");
         item.setSubCategory(subCategory);
-        /*try {
-            item.setImage(ImageUtils.inputStreamToByteArray(getResourceAsStream("/images/maltin.jpg")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
+
         return itemService.save(item);
     }
 
@@ -240,15 +227,5 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
         providerService.save(provider1);
         providerService.save(provider2);
     }
-    /*private ProviderItem providerItem(Provider provider, Item item, Double price, String provaederNameCode, MeasureUnit measureUnit){
-        ProviderItem providerItem=new ProviderItem();
-        providerItem.setProvider(provider);
-        providerItem.setItem(item);
-        providerItem.setProviderItemCode(provaederNameCode);
-        providerItem.setPrice(price);
-        providerItem.setMeasureUnit(measureUnit);
-        return providerItem;
-    }
 
-     */
 }

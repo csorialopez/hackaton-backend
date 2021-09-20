@@ -15,10 +15,8 @@ public class PurchaseOrderPayment extends ModelBase<PurchaseOrderPaymentDto> {
 
     private String description;
 
-    //MONTOPAGO
     private BigDecimal payAmount;
 
-    //CLASEPAGO
     @Enumerated(EnumType.STRING)
     private PurchaseOrderPaymentKind purchaseOrderPaymentKind;
 
