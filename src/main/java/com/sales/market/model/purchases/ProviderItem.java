@@ -13,21 +13,20 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.math.BigDecimal;
 
-@Getter
 @Setter
+@Getter
 @Entity
 public class ProviderItem extends ModelBase<ProviderItemDto> {
 
-    @ManyToOne(optional = false)
+    @ManyToOne
+//    @JoinColumn(name = "id_provider",nullable = false)
     private Provider provider;
-    @ManyToOne(optional = false)
+
+    @ManyToOne
+//    @JoinColumn(name = "id_item",nullable = false)
     private Item item;
 
     private String providerItemCode;
-
-    private String providerCode;
-
-    private String itemCode;
 
     @OneToOne(targetEntity = MeasureUnit.class)
     private MeasureUnit measureUnit;

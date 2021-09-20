@@ -13,9 +13,7 @@ import javax.persistence.Entity;
 public class MeasureUnit extends ModelBase<MeasureUnitDto> {
 
     private String measureUnitCode;
-
     private String name;
-
     private String description;
 
 }
