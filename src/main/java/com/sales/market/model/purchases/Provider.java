@@ -7,12 +7,17 @@ import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import java.util.List;
+
 
 
 @Getter
 @Setter
 @Entity
+@Table(uniqueConstraints = {@UniqueConstraint(name = "UK_PROVIDER_NAME", columnNames = {"name"}),
+        @UniqueConstraint(name = "UK_PROVIDER_CODE", columnNames = {"code"})})
 public class Provider extends ModelBase<ProviderDto> {
     private String name;
 

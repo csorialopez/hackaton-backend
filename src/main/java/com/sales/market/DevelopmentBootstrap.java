@@ -37,10 +37,10 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
     private final ItemService itemService;
     private final ItemInstanceService itemInstanceService;
     private final ProviderService providerService;
-    private EmployeeRepository employeeRepository;
-    private UserService userService;
-    private RoleService roleService;
-    private CustomerService customerService;
+    private final EmployeeRepository employeeRepository;
+    private final UserService userService;
+    private final RoleService roleService;
+    private final CustomerService customerService;
     private final MeasureUnitService measureUnitService;
 
     SubCategory beverageSubCat = null;
