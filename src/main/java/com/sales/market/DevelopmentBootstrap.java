@@ -11,8 +11,11 @@ import com.sales.market.model.purchases.ProviderItem;
 import com.sales.market.repository.BuyRepository;
 import com.sales.market.repository.EmployeeRepository;
 import com.sales.market.service.*;
+import com.sales.market.service.purchases.MeasureUnitService;
 import com.sales.market.service.purchases.ProviderService;
 import io.micrometer.core.instrument.util.IOUtils;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
@@ -25,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshedEvent> {
     private final BuyRepository buyRepository;
     private final CategoryService categoryService;
@@ -32,29 +36,14 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
     private final ItemService itemService;
     private final ItemInstanceService itemInstanceService;
     private final ProviderService providerService;
-    private EmployeeRepository employeeRepository;
-    private UserService userService;
-    private RoleService roleService;
+    private final EmployeeRepository employeeRepository;
+    private final UserService userService;
+    private final RoleService roleService;
+    private final MeasureUnitService measureUnitService;
 
     SubCategory beverageSubCat = null;
 
-    // injeccion evita hacer instancia   = new Clase();
-    // bean pueden tener muchos campos y otros beans asociados
 
-
-    public DevelopmentBootstrap(BuyRepository buyRepository, CategoryService categoryService,
-                                SubCategoryService subCategoryService, ItemService itemService, ItemInstanceService itemInstanceService,
-                                ProviderService providerService, EmployeeRepository employeeRepository, UserService userService, RoleService roleService) {
-        this.buyRepository = buyRepository;
-        this.categoryService = categoryService;
-        this.subCategoryService = subCategoryService;
-        this.itemService = itemService;
-        this.itemInstanceService = itemInstanceService;
-        this.providerService = providerService;
-        this.employeeRepository = employeeRepository;
-        this.userService = userService;
-        this.roleService = roleService;
-    }
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
@@ -75,6 +64,15 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
         initializeRoles();
         initializeEmployees();
         createProvider();
+        persistMeasureUnit();
+    }
+
+    private void persistMeasureUnit() {
+        MeasureUnit measureUnit = new MeasureUnit();
+        measureUnit.setName("Unidad");
+        measureUnit.setDescription("Unidad de medida");
+        measureUnit.setMeasureUnitCode("code1");
+        measureUnitService.save(measureUnit);
     }
 
     private void initializeRoles() {

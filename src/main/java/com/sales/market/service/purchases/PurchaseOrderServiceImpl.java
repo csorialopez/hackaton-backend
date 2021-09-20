@@ -1,11 +1,13 @@
 package com.sales.market.service.purchases;
 
+import com.sales.market.exception.purchases.GenericException;
 import com.sales.market.model.ItemInventory;
 import com.sales.market.model.purchases.*;
 import com.sales.market.repository.GenericRepository;
 import com.sales.market.repository.purchases.PurchaseOrderRepository;
 import com.sales.market.service.GenericServiceImpl;
 import com.sales.market.service.ItemInventoryService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -86,6 +88,38 @@ public class PurchaseOrderServiceImpl extends GenericServiceImpl<PurchaseOrder> 
             purchaseOrder.setBalanceAmount(purchaseOrder.getBalanceAmount().subtract(payAmount));
         }
         save(purchaseOrder);
+    }
+
+    @Override
+    public PurchaseOrder updatePurchaseOrderStatus(PurchaseOrderPayment purchaseOrderPayment) {
+        PurchaseOrder purchaseOrder = findById(purchaseOrderPayment.getPurchaseOrder().getId());
+        if (purchaseOrderPayment.getPurchaseOrderPaymentKind() == PurchaseOrderPaymentKind.ADVANCE_PAYMENT) {
+            purchaseOrder.setBalanceAmount(purchaseOrder.getBalanceAmount().subtract(purchaseOrderPayment.getPayAmount()));
+            if (purchaseOrder.getPaymentStatus() == PurchaseOrderPaymentStatus.NO_PAYMENT) {
+                purchaseOrder.setPaymentStatus(PurchaseOrderPaymentStatus.PARTIAL_PAYMENT);
+            }
+        } else if (purchaseOrderPayment.getPurchaseOrderPaymentKind() == PurchaseOrderPaymentKind.LIQUIDATION_PAYMENT) {
+            purchaseOrder.setBalanceAmount(BigDecimal.ZERO);
+            purchaseOrder.setPaymentStatus(PurchaseOrderPaymentStatus.FULLY_PAID);
+            purchaseOrder.setState(PurchaseOrderState.LIQ);
+        }
+        return save(purchaseOrder);
+    }
+
+    @Override
+    public boolean verifyPurchaseOrderPaymentKindIsLiquidation (BigDecimal payAmount, Long purchaseOrderId) {
+        PurchaseOrder purchaseOrder = findById(purchaseOrderId);
+        BigDecimal balanceUpdated = purchaseOrder.getBalanceAmount().subtract(payAmount);
+        if (balanceUpdated.compareTo(BigDecimal.ZERO) == 0) {
+            return true;
+        }
+        if (balanceUpdated.compareTo(BigDecimal.ZERO) == 1) {
+            return false;
+        }
+        if (balanceUpdated.compareTo(BigDecimal.ZERO) == -1) {
+            throw new GenericException("The payment amount is greater thar the required. You paid " + payAmount + " but the required amount is only " + purchaseOrder.getBalanceAmount(), HttpStatus.BAD_REQUEST);
+        }
+        return false;
     }
 
     private List<PurchaseOrderDetail> getOrderDetailsByItem(List<ItemInventory> itemsInventory){
