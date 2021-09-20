@@ -122,11 +122,11 @@ class PurchaseOrderServiceTest {
         providerItemService.save(providerItem1);
 
         ProviderItem providerItem2 =  new ProviderItem();
-        providerItem1.setItem(item2);
-        providerItem1.setProviderItemCode("gaseosa grande");
-        providerItem1.setPrice(new BigDecimal((10)));
-        providerItem1.setMeasureUnit(measureUnit);
-        providerItem1.setProvider(provider2);
+        providerItem2.setItem(item2);
+        providerItem2.setProviderItemCode("gaseosa grande");
+        providerItem2.setPrice(new BigDecimal((10)));
+        providerItem2.setMeasureUnit(measureUnit);
+        providerItem2.setProvider(provider2);
         providerItemService.save(providerItem2);
 
         List<PurchaseOrder> listaPurchases = purchaseOrderService.solicitarOrden(itemInventoryService.getItemsLowerBoundery(),"000001");

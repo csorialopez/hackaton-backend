@@ -54,7 +54,7 @@ public class PurchaseOrderServiceImpl extends GenericServiceImpl<PurchaseOrder> 
             });
             purchaseOrders.add(createPurchaseOrder(orderDetails1, provider, numberPurchaseOrder));
         }));
-        return purchaseOrders;
+        return saveAll(purchaseOrders);
     }
 
     private BigDecimal getTotalAmountDetail(List<PurchaseOrderDetail> listaItems){
@@ -136,6 +136,8 @@ public class PurchaseOrderServiceImpl extends GenericServiceImpl<PurchaseOrder> 
             orderDetail.setProvider(providerItem.getProvider());
             providers.add(providerItem.getProvider());
             orderDetails.add(orderDetail);
+            item.setStockQuantity(item.getStockQuantity().add(quantity));
+            itemInventoryService.saveAndFlush(item);
         }
         return orderDetails;
     }
