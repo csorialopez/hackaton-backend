@@ -76,8 +76,8 @@ class PurchaseOrderPaymentServiceImplementationTest {
     }
 
     public PurchaseOrder createPurchaseOrder (String orderNumber) {
-        Provider provider = createProvider();
-
+//        Provider provider = createProvider();
+        Provider provider = providerService.findById(1L);
         PurchaseOrder purchaseOrder = new PurchaseOrder();
         purchaseOrder.setOrderNumber(orderNumber);
         purchaseOrder.setDate(new Date());
@@ -111,14 +111,7 @@ class PurchaseOrderPaymentServiceImplementationTest {
         vo.setPurchaseOrderId(purchaseOrderId);
         return vo;
     }
-
-    public Provider createProvider () {
-        Provider provider = new Provider();
-        provider.setCode("TEST-PROVIDER-CODE");
-        provider.setName("TEST PROVIDER NAME");
-        return providerService.save(provider);
-    }
-
+    
     public Item createItem (String name) {
         Item item = new Item();
         item.setCode("ITEM-"+name.toUpperCase());
