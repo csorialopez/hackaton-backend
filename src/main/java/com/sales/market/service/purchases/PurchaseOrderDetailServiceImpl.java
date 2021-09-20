@@ -12,12 +12,13 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @AllArgsConstructor
-public class PurchaseOrderDetailServiceImpl extends GenericServiceImpl<PurchaseOrderDetail> {
+public class PurchaseOrderDetailServiceImpl extends GenericServiceImpl<PurchaseOrderDetail> implements PurchaseOrderDetailService {
     private final PurchaseOrderDetailRepository repository;
-
 
     @Override
     protected GenericRepository<PurchaseOrderDetail> getRepository() {
         return repository;
     }
+
+
 }

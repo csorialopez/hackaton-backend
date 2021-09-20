@@ -1,8 +1,9 @@
-package com.sales.market.service;
+package com.sales.market.service.purchases;
 
 import com.sales.market.model.purchases.ActionRequired;
-import com.sales.market.repository.ActionRequiredRepository;
+import com.sales.market.repository.purchases.ActionRequiredRepository;
 import com.sales.market.repository.GenericRepository;
+import com.sales.market.service.GenericServiceImpl;
 import org.springframework.stereotype.Service;
 
 @Service("ActionRequiredService")

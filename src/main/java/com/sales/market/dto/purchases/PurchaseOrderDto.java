@@ -1,12 +1,12 @@
-package com.sales.market.dto;
+package com.sales.market.dto.purchases;
 
-import com.sales.market.model.purchases.PurchaseOrder;
-import com.sales.market.model.purchases.PurchaseOrderPaymentStatus;
-import com.sales.market.model.purchases.PurchaseOrderReceivedType;
-import com.sales.market.model.purchases.PurchaseOrderState;
+import com.sales.market.dto.DtoBase;
+import com.sales.market.model.purchases.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class PurchaseOrderDto extends DtoBase<PurchaseOrder> {
     private String orderNumber;
@@ -19,6 +19,7 @@ public class PurchaseOrderDto extends DtoBase<PurchaseOrder> {
     private BigDecimal totalAmount;
     private BigDecimal balanceAmount;
     private PurchaseOrderPaymentStatus paymentStatus;
+    private List<PurchaseOrderDetailDto> purchaseOrderDetailList = new ArrayList<PurchaseOrderDetailDto>(0);
 
     public String getOrderNumber() {
         return orderNumber;
@@ -100,4 +101,11 @@ public class PurchaseOrderDto extends DtoBase<PurchaseOrder> {
         this.paymentStatus = paymentStatus;
     }
 
+    public List<PurchaseOrderDetailDto> getPurchaseOrderDetailList() {
+        return purchaseOrderDetailList;
+    }
+
+    public void setPurchaseOrderDetailList(List<PurchaseOrderDetailDto> purchaseOrderDetailList) {
+        this.purchaseOrderDetailList = purchaseOrderDetailList;
+    }
 }
