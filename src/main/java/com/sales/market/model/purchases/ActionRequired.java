@@ -9,7 +9,11 @@ import javax.persistence.*;
 import com.sales.market.model.ModelBase;
 import com.sales.market.dto.ActionRequiredDto;
 import com.sales.market.model.User;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 public class ActionRequired extends ModelBase<ActionRequiredDto> {
 

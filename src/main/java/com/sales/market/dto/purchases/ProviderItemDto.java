@@ -12,8 +12,8 @@ import lombok.Setter;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
-@Getter
-@Setter
+//@Getter
+//@Setter
 public class ProviderItemDto extends DtoBase<ProviderItem> {
 
     private ProviderDto provider;
@@ -26,9 +26,63 @@ public class ProviderItemDto extends DtoBase<ProviderItem> {
 
     private String itemCode;
 
-    private MeasureUnit measureUnit;
+    private MeasureUnitDto measureUnit;
 
     private Double price;
 
+    public ProviderDto getProvider() {
+        return provider;
+    }
 
+    public void setProvider(ProviderDto provider) {
+        this.provider = provider;
+    }
+
+    public ItemDto getItem() {
+        return item;
+    }
+
+    public void setItem(ItemDto item) {
+        this.item = item;
+    }
+
+    public String getProviderItemCode() {
+        return providerItemCode;
+    }
+
+    public void setProviderItemCode(String providerItemCode) {
+        this.providerItemCode = providerItemCode;
+    }
+
+    public String getProviderCode() {
+        return providerCode;
+    }
+
+    public void setProviderCode(String providerCode) {
+        this.providerCode = providerCode;
+    }
+
+    public String getItemCode() {
+        return itemCode;
+    }
+
+    public void setItemCode(String itemCode) {
+        this.itemCode = itemCode;
+    }
+
+    public MeasureUnitDto getMeasureUnit() {
+        return measureUnit;
+    }
+
+    public void setMeasureUnit(MeasureUnitDto measureUnit) {
+        this.measureUnit = measureUnit;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
 }

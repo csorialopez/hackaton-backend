@@ -9,8 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import java.util.List;
 
-@Getter
-@Setter
+
 @Entity
 public class Provider extends ModelBase<ProviderDto> {
     private String name;
@@ -19,4 +18,28 @@ public class Provider extends ModelBase<ProviderDto> {
 
     @OneToMany(mappedBy = "provider")
     private List<ProviderItem> providerItemList;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public List<ProviderItem> getProviderItemList() {
+        return providerItemList;
+    }
+
+    public void setProviderItemList(List<ProviderItem> providerItemList) {
+        this.providerItemList = providerItemList;
+    }
 }
