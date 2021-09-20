@@ -12,6 +12,7 @@ import com.sales.market.repository.BuyRepository;
 import com.sales.market.repository.EmployeeRepository;
 import com.sales.market.service.*;
 import com.sales.market.service.purchases.MeasureUnitService;
+import com.sales.market.service.purchases.ProviderItemService;
 import com.sales.market.service.purchases.ProviderService;
 import io.micrometer.core.instrument.util.IOUtils;
 import lombok.AllArgsConstructor;
@@ -40,6 +41,7 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
     private final UserService userService;
     private final RoleService roleService;
     private final MeasureUnitService measureUnitService;
+    private final ProviderItemService providerItemService;
 
     SubCategory beverageSubCat = null;
 
@@ -63,8 +65,8 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
         persistItemInstances(maltinItem);
         initializeRoles();
         initializeEmployees();
-        createProvider();
         persistMeasureUnit();
+        createMeasureUnit();
     }
 
     private void persistMeasureUnit() {
@@ -213,23 +215,36 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
         provider.setName(name);
         return  provider;
     }
-    public void createProvider(){
-        Provider provider=provider("P_1","PROVEEDOR");
-        Provider provider1=provider("P_2","PROVEEDOR_2");
-        Provider provider2=provider("P_3","PROVEEDOR_3");
+
+    public MeasureUnit measureUnit(String name,String measureUnitCode){
+        MeasureUnit measureUnit = new MeasureUnit();
+        measureUnit.setName(name);
+        measureUnit.setMeasureUnitCode(measureUnitCode);
+        measureUnitService.save(measureUnit);
+        return measureUnit;
+    }
+    private void createMeasureUnit(){
+        Item item = persistItems(beverageSubCat);
+        MeasureUnit measureUnit = measureUnit("unidad","U");
+        measureUnitService.save(measureUnit);
+        Provider provider=provider("P_1","Proveedor Escoba");
+        Provider provider1=provider("P_2","Proveedor Escoba");
+        Provider provider2=provider("P_3","Proveedor Escoba");
         providerService.save(provider);
         providerService.save(provider1);
         providerService.save(provider2);
+        ProviderItem providerItem=providerItem(item,provider,new BigDecimal(20),measureUnit,"Prov Escoba");
+        ProviderItem providerItem1=providerItem(item,provider1,new BigDecimal(10),measureUnit,"Prov Escoba_01");
+        providerItemService.save(providerItem);
+        providerItemService.save(providerItem1);
     }
-    /*private ProviderItem providerItem(Provider provider, Item item, Double price, String provaederNameCode, MeasureUnit measureUnit){
-        ProviderItem providerItem=new ProviderItem();
-        providerItem.setProvider(provider);
+    private ProviderItem providerItem(Item item,Provider provider,BigDecimal precio,MeasureUnit measureUnit,String codeProviderItem){
+        ProviderItem providerItem =  new ProviderItem();
         providerItem.setItem(item);
-        providerItem.setProviderItemCode(provaederNameCode);
-        providerItem.setPrice(price);
+        providerItem.setProviderItemCode(codeProviderItem);
+        providerItem.setPrice(precio);
         providerItem.setMeasureUnit(measureUnit);
-        return providerItem;
+        providerItem.setProvider(provider);
+      return providerItem;
     }
-
-     */
 }
