@@ -11,9 +11,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,13 +20,18 @@ public class PurchaseOrderServiceImpl extends GenericServiceImpl<PurchaseOrder> 
     private final ActionRequiredService actionRequiredService;
     private final PurchaseOrderDetailService purchaseOrderDetailService;
     private final ItemInventoryService itemInventoryService;
+    private final ProviderItemService providerItemService;
+
+    public Set<Provider> providers = new HashSet<>();
 
     public PurchaseOrderServiceImpl(PurchaseOrderRepository repository, ActionRequiredService actionRequiredService,
-                                    PurchaseOrderDetailService purchaseOrderDetailService, ItemInventoryService itemInventoryService) {
+                                    PurchaseOrderDetailService purchaseOrderDetailService, ItemInventoryService itemInventoryService,
+                                    ProviderItemService providerItemService) {
         this.repository = repository;
         this.actionRequiredService = actionRequiredService;
         this.purchaseOrderDetailService = purchaseOrderDetailService;
         this.itemInventoryService = itemInventoryService;
+        this.providerItemService = providerItemService;
     }
 
     @Override
@@ -36,21 +39,23 @@ public class PurchaseOrderServiceImpl extends GenericServiceImpl<PurchaseOrder> 
         return repository;
     }
 
-    public PurchaseOrder solicitarOrden(List<ItemInventory> listaItems, String numberPurchaseOrder) {
-        PurchaseOrder purchase = new PurchaseOrder();
-        purchase.setPurchaseOrderDetailList(getOrderDetailsByItem(listaItems));
-        purchase.setOrderNumber(numberPurchaseOrder);
-        purchase.setDate(Date.from(Instant.now()));
-        purchase.setState(PurchaseOrderState.PEN);
-        purchase.setReceivedType(PurchaseOrderReceivedType.NR);
-        purchase.setPaymentStatus(PurchaseOrderPaymentStatus.NO_PAYMENT);
-        purchase.setTotalAmount(getTotalAmountDetail(listaItems));
-        purchase.setBalanceAmount(BigDecimal.ZERO);
-        return purchase;
+    public List<PurchaseOrder> solicitarOrden(List<ItemInventory> listaItems, String numberPurchaseOrder) {
+        List<PurchaseOrderDetail>orderDetails = getOrderDetailsByItem(listaItems);
+        List<PurchaseOrder> purchaseOrders = new ArrayList<>();
+        providers.stream().forEach((provider -> {
+            List<PurchaseOrderDetail> orderDetails1 = new ArrayList<>();
+            orderDetails.forEach(purchaseOrderDetail -> {
+                if (purchaseOrderDetail.getProvider() == provider){
+                    orderDetails1.add(purchaseOrderDetail);
+                }
+            });
+            purchaseOrders.add(createPurchaseOrder(orderDetails1, provider, numberPurchaseOrder));
+        }));
+        return purchaseOrders;
     }
 
-    private BigDecimal getTotalAmountDetail(List<ItemInventory> listaItems){
-        List<BigDecimal> totalAmountDetail = getOrderDetailsByItem(listaItems).stream().map(detail->
+    private BigDecimal getTotalAmountDetail(List<PurchaseOrderDetail> listaItems){
+        List<BigDecimal> totalAmountDetail = listaItems.stream().map(detail->
                 detail.getTotalAmount()).collect(Collectors.toList());
         BigDecimal sum = BigDecimal.ZERO;
         for(BigDecimal total: totalAmountDetail){
@@ -86,15 +91,32 @@ public class PurchaseOrderServiceImpl extends GenericServiceImpl<PurchaseOrder> 
         List<PurchaseOrderDetail> orderDetails = new ArrayList<>();
         for (ItemInventory item: itemsInventory ) {
             BigDecimal quantity = item.getUpperBoundThreshold().subtract(item.getStockQuantity());
-            ProviderItem providerItem = new ProviderItem();//providerItemService.findByIdItem(item.getItem().getId());
+            ProviderItem providerItem = providerItemService.getProviderItemsBy(item.getItem());
             PurchaseOrderDetail orderDetail = new PurchaseOrderDetail();
             orderDetail.setItem(item.getItem());
             orderDetail.setItemCode(item.getItem().getCode());
             orderDetail.setProviderItemCode(providerItem.getProviderItemCode());
             orderDetail.setMeasureUnit(providerItem.getMeasureUnit());
             orderDetail.setTotalAmount(quantity.multiply(providerItem.getPrice()));
+            orderDetail.setProvider(providerItem.getProvider());
+            providers.add(providerItem.getProvider());
             orderDetails.add(orderDetail);
         }
-        return purchaseOrderDetailService.saveAll(orderDetails);
+        return orderDetails;
+    }
+
+    private PurchaseOrder createPurchaseOrder ( List<PurchaseOrderDetail> listDetails, Provider provider, String orderNumber) {
+        PurchaseOrder purchase = new PurchaseOrder();
+        purchase.setPurchaseOrderDetailList(purchaseOrderDetailService.saveAll(listDetails));
+        purchase.setOrderNumber(orderNumber);
+        purchase.setDate(Date.from(Instant.now()));
+        purchase.setState(PurchaseOrderState.PEN);
+        purchase.setReceivedType(PurchaseOrderReceivedType.NR);
+        purchase.setPaymentStatus(PurchaseOrderPaymentStatus.NO_PAYMENT);
+        purchase.setTotalAmount(getTotalAmountDetail(listDetails));
+        purchase.setBalanceAmount(BigDecimal.ZERO);
+        purchase.setProvider(provider);
+        purchase.setProviderCode(provider.getCode());
+        return purchase;
     }
 }
