@@ -1,5 +1,6 @@
 package com.sales.market.service.purchases;
 
+import com.sales.market.exception.purchases.GenericException;
 import com.sales.market.model.purchases.Customer;
 import com.sales.market.model.purchases.CustomerDiscount;
 import com.sales.market.model.purchases.CustomerDiscountRule;
@@ -9,6 +10,7 @@ import com.sales.market.service.GenericServiceImpl;
 import com.sales.market.service.mail.EmailService;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +34,7 @@ public class CustomerDiscountRuleServiceImpl extends GenericServiceImpl<Customer
     @Override
     public CustomerDiscountRule save(CustomerDiscountRule model) {
         if (model.getAmount().compareTo(new BigDecimal("50")) == 1){
+            throw new GenericException("El descuento no puede superar el valor de " + "50", HttpStatus.BAD_REQUEST);
         }
         model =  super.save(model);
         List<Customer> customers = customerService.findAll();
