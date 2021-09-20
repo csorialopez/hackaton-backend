@@ -1,12 +1,15 @@
 package com.sales.market.service.purchases;
 
+import com.sales.market.exception.purchases.GenericException;
 import com.sales.market.model.Item;
 import com.sales.market.model.purchases.*;
 import com.sales.market.service.ItemServiceImpl;
 import com.sales.market.service.PurchaseOrderServiceImpl;
+import com.sales.market.vo.PurchaseOrderPaymentVo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -32,45 +35,49 @@ class PurchaseOrderPaymentServiceImplementationTest {
     @Autowired
     ItemServiceImpl itemService;
 
+    @Autowired
+    ProviderServiceImpl providerService;
+
     @Test
     public void testRegisterOrderPaymentWhenPurchaseOrderPaymentKindIsPartial () {
         PurchaseOrder purchaseOrder = createPurchaseOrder("TEST-ORDER-1");
-
-        PurchaseOrderPayment purchaseOrderPayment = createPurchaseOrderPayment(
-                new BigDecimal("100"),
-                PurchaseOrderPaymentKind.ADVANCE_PAYMENT,
-                purchaseOrder);
-        purchaseOrderPaymentService.registerOrderPayment(null);
-        PurchaseOrder purchaseOrderUpdated = purchaseOrderService.findById(purchaseOrderPayment.getPurchaseOrder().getId());
-        assertEquals(purchaseOrderUpdated.getBalanceAmount(), new BigDecimal("400"));
+        PurchaseOrderPaymentVo vo = createPurchaseOrderPaymentVo(purchaseOrder.getOrderNumber(), "100", purchaseOrder.getId());
+        purchaseOrderPaymentService.registerOrderPayment(vo);
+        PurchaseOrder purchaseOrderUpdated = purchaseOrderService.findById(vo.getPurchaseOrderId());
+        assertTrue(purchaseOrderUpdated.getBalanceAmount().compareTo(new BigDecimal("400")) == 0);
         assertEquals(purchaseOrderUpdated.getPaymentStatus(), PurchaseOrderPaymentStatus.PARTIAL_PAYMENT);
-        assertEquals(purchaseOrderUpdated.getState(), PurchaseOrderState.FIN);
+        assertEquals(PurchaseOrderState.FIN, purchaseOrderUpdated.getState());
     }
 
     @Test
     public void testRegisterOrderPaymentWhenPurchaseOrderPaymentKindIsTotal () {
         PurchaseOrder purchaseOrder = createPurchaseOrder("TEST-ORDER-2");
-
-        PurchaseOrderPayment purchaseOrderPayment = createPurchaseOrderPayment(
-                new BigDecimal("500"),
-                PurchaseOrderPaymentKind.LIQUIDATION_PAYMENT,
-                purchaseOrder);
-        purchaseOrderPaymentService.registerOrderPayment(null);
-        PurchaseOrder purchaseOrderUpdated = purchaseOrderService.findById(purchaseOrderPayment.getPurchaseOrder().getId());
-
-        assertEquals(purchaseOrderUpdated.getBalanceAmount(), BigDecimal.ZERO);
+        PurchaseOrderPaymentVo vo = createPurchaseOrderPaymentVo(purchaseOrder.getOrderNumber(), "500", purchaseOrder.getId());
+        purchaseOrderPaymentService.registerOrderPayment(vo);
+        PurchaseOrder purchaseOrderUpdated = purchaseOrderService.findById(vo.getPurchaseOrderId());
+        assertTrue(purchaseOrderUpdated.getBalanceAmount().compareTo(BigDecimal.ZERO) == 0);
         assertEquals(purchaseOrderUpdated.getPaymentStatus(), PurchaseOrderPaymentStatus.FULLY_PAID);
         assertEquals(purchaseOrderUpdated.getState(), PurchaseOrderState.LIQ);
     }
 
-    public void testRegisterOrderPaymentWhenPurchaseOrderPaymentKindIsTotalAndPayAmountIsNotEnoughShouldFail () {
-        //todo implementar cuando se tenga el exceptionhandler
+    @Test
+    public void testRegisterOrderPaymentWhenPayAmountIsGreaterThanBalanceShouldFailAndShowExceptionMessage () {
+        PurchaseOrder purchaseOrder = createPurchaseOrder("TEST-ORDER-3");
+        String payAmount = "501.00";
+        PurchaseOrderPaymentVo vo = createPurchaseOrderPaymentVo(purchaseOrder.getOrderNumber(), payAmount, purchaseOrder.getId());
+        try {
+            purchaseOrderPaymentService.registerOrderPayment(vo);
+        } catch (GenericException e) {
+            assertEquals(
+                    "The payment amount is greater thar the required. You paid "+ payAmount+" but the required amount is only 500.00" ,
+                    e.getMessage()
+            );
+            assertEquals(HttpStatus.BAD_REQUEST, e.getHttpStatus());
+        }
     }
 
     public PurchaseOrder createPurchaseOrder (String orderNumber) {
-        Provider provider = new Provider();
-        provider.setCode("TEST_PROVIDER-CODE");
-        provider.setName("TEST PROVIDER NAME");
+        Provider provider = createProvider();
 
         PurchaseOrder purchaseOrder = new PurchaseOrder();
         purchaseOrder.setOrderNumber(orderNumber);
@@ -83,16 +90,9 @@ class PurchaseOrderPaymentServiceImplementationTest {
 
         PurchaseOrderDetail detail = new PurchaseOrderDetail();
 
-        MeasureUnit measureUnit = new MeasureUnit();
-        measureUnit.setDescription("TEST unit description");
-        measureUnit.setName("TEST UNIT");
-        measureUnit.setMeasureUnitCode("U");
-        measureUnitService.save(measureUnit);
+        MeasureUnit measureUnit = createMeasureUnit();
 
-        Item item = new Item();
-        item.setCode("it");
-        item.setName("item name");
-        itemService.save(item);
+        Item item = createItem("test");
 
 //        detail.setPurchaseOrder(purchaseOrder);
         detail.setQuantity(new BigDecimal("10"));
@@ -101,18 +101,39 @@ class PurchaseOrderPaymentServiceImplementationTest {
         detail.setItemCode("TEST-item-code");
         detail.setProviderItemCode("TEST-PROVIDER-item-code");
         purchaseOrderDetailService.save(detail);
-        purchaseOrder.setPurchaseOrderDetailList(Arrays.asList(detail));
-        purchaseOrder.setDefaultDetail(detail);
-        return purchaseOrderService.save(purchaseOrder);
+        purchaseOrder.setPurchaseOrderDetailList(Arrays.asList());
+//        purchaseOrder.setDefaultDetail(detail);
+        return purchaseOrderService.saveAndFlush(purchaseOrder);
     }
 
-    public PurchaseOrderPayment createPurchaseOrderPayment (BigDecimal payAmount, PurchaseOrderPaymentKind purchaseOrderPaymentKind, PurchaseOrder purchaseOrder) {
-        PurchaseOrderPayment purchaseOrderPayment = new PurchaseOrderPayment();
-        purchaseOrderPayment.setDescription("TEST descripcion para orden de compra con monto " + payAmount + " y tipo de orden " + purchaseOrderPaymentKind.toString());
-        purchaseOrderPayment.setPayAmount(payAmount);
-        purchaseOrderPayment.setPurchaseOrderPaymentKind(purchaseOrderPaymentKind);
-        purchaseOrderPayment.setPurchaseOrder(purchaseOrder);
-        return purchaseOrderPayment;
+    public PurchaseOrderPaymentVo createPurchaseOrderPaymentVo (String orderNumberPurchase, String payAmount, Long purchaseOrderId) {
+        PurchaseOrderPaymentVo vo = new PurchaseOrderPaymentVo();
+        vo.setDescription(orderNumberPurchase+ " description");
+        vo.setPayAmount(payAmount);
+        vo.setPurchaseOrderId(purchaseOrderId);
+        return vo;
+    }
+
+    public Provider createProvider () {
+        Provider provider = new Provider();
+        provider.setCode("TEST-PROVIDER-CODE");
+        provider.setName("TEST PROVIDER NAME");
+        return providerService.save(provider);
+    }
+
+    public Item createItem (String name) {
+        Item item = new Item();
+        item.setCode("ITEM-"+name.toUpperCase());
+        item.setName("item " + name);
+        return itemService.save(item);
+    }
+
+    public MeasureUnit createMeasureUnit () {
+        MeasureUnit measureUnit = new MeasureUnit();
+        measureUnit.setDescription("TEST unit description");
+        measureUnit.setName("TEST UNIT");
+        measureUnit.setMeasureUnitCode("U");
+        return measureUnitService.save(measureUnit);
     }
 
 }
