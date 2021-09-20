@@ -6,10 +6,12 @@ package com.sales.market;
 
 import com.sales.market.model.*;
 import com.sales.market.model.purchases.Customer;
+import com.sales.market.model.purchases.Provider;
 import com.sales.market.repository.BuyRepository;
 import com.sales.market.repository.EmployeeRepository;
 import com.sales.market.service.*;
 import com.sales.market.service.purchases.CustomerService;
+import com.sales.market.service.purchases.ProviderService;
 import io.micrometer.core.instrument.util.IOUtils;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -29,6 +31,7 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
     private final SubCategoryService subCategoryService;
     private final ItemService itemService;
     private final ItemInstanceService itemInstanceService;
+    private final ProviderService providerService;
     private EmployeeRepository employeeRepository;
     private UserService userService;
     private RoleService roleService;
@@ -43,12 +46,14 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
     public DevelopmentBootstrap(BuyRepository buyRepository, CategoryService categoryService,
             SubCategoryService subCategoryService, ItemService itemService, ItemInstanceService itemInstanceService,
             EmployeeRepository employeeRepository, UserService userService, RoleService roleService,
-                                CustomerService customerService) {
+                                CustomerService customerService, ProviderService providerService) {
+
         this.buyRepository = buyRepository;
         this.categoryService = categoryService;
         this.subCategoryService = subCategoryService;
         this.itemService = itemService;
         this.itemInstanceService = itemInstanceService;
+        this.providerService = providerService;
         this.employeeRepository = employeeRepository;
         this.userService = userService;
         this.roleService = roleService;
@@ -74,8 +79,10 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
         initializeRoles();
         initializeEmployees();
 
+
         //hackaton
         persistCustomer();
+        createProvider();
     }
 
     private void persistCustomer() {
@@ -190,7 +197,9 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
 
     private void persistCategoriesAndSubCategories() {
         Category category = persistCategory();
+        Category category1=persistCategory_pro();
         persistSubCategory("SUBCAT1-NAME", "SUBCAT1-CODE", category);
+        persistSubCategory("SUB_LIM","SUB_LIM123",category1);
         beverageSubCat = persistSubCategory("BEVERAGE", "BEVERAGE-CODE", category);
     }
 
@@ -214,4 +223,35 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
         buy.setValue(value);
         buyRepository.save(buy);
     }
+    private Category persistCategory_pro() {
+        Category category = new Category();
+        category.setName("LIMPIEZA");
+        category.setCode("LIMP-CODE");
+        return categoryService.save(category);
+    }
+    private Provider provider(String code,String name){
+        Provider provider=new Provider();
+        provider.setCode(code);
+        provider.setName(name);
+        return  provider;
+    }
+    public void createProvider(){
+        Provider provider=provider("P_1","PROVEEDOR");
+        Provider provider1=provider("P_2","PROVEEDOR_2");
+        Provider provider2=provider("P_3","PROVEEDOR_3");
+        providerService.save(provider);
+        providerService.save(provider1);
+        providerService.save(provider2);
+    }
+    /*private ProviderItem providerItem(Provider provider, Item item, Double price, String provaederNameCode, MeasureUnit measureUnit){
+        ProviderItem providerItem=new ProviderItem();
+        providerItem.setProvider(provider);
+        providerItem.setItem(item);
+        providerItem.setProviderItemCode(provaederNameCode);
+        providerItem.setPrice(price);
+        providerItem.setMeasureUnit(measureUnit);
+        return providerItem;
+    }
+
+     */
 }
