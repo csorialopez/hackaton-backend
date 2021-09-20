@@ -129,7 +129,7 @@ class PurchaseOrderServiceTest {
         providerItem2.setProvider(provider2);
         providerItemService.save(providerItem2);
 
-        List<PurchaseOrder> listaPurchases = purchaseOrderService.solicitarOrden(itemInventoryService.getItemsLowerBoundery(),"000001");
+        List<PurchaseOrder> listaPurchases = purchaseOrderService.solicitarOrden(itemInventoryService.getItemsLowerBoundery());
         assertEquals(listaPurchases.size(), 1);
 
 

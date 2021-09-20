@@ -7,6 +7,7 @@ import com.sales.market.repository.GenericRepository;
 import com.sales.market.repository.purchases.PurchaseOrderRepository;
 import com.sales.market.service.GenericServiceImpl;
 import com.sales.market.service.ItemInventoryService;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +43,7 @@ public class PurchaseOrderServiceImpl extends GenericServiceImpl<PurchaseOrder> 
     }
 
     @Override
-    public List<PurchaseOrder> solicitarOrden(List<ItemInventory> listaItems, String numberPurchaseOrder) {
+    public List<PurchaseOrder> solicitarOrden(List<ItemInventory> listaItems) {
         List<PurchaseOrderDetail>orderDetails = getOrderDetailsByItem(listaItems);
         List<PurchaseOrder> purchaseOrders = new ArrayList<>();
         providers.stream().forEach((provider -> {
@@ -52,7 +53,7 @@ public class PurchaseOrderServiceImpl extends GenericServiceImpl<PurchaseOrder> 
                     orderDetails1.add(purchaseOrderDetail);
                 }
             });
-            purchaseOrders.add(createPurchaseOrder(orderDetails1, provider, numberPurchaseOrder));
+            purchaseOrders.add(createPurchaseOrder(orderDetails1, provider));
         }));
         return saveAll(purchaseOrders);
     }
@@ -142,10 +143,11 @@ public class PurchaseOrderServiceImpl extends GenericServiceImpl<PurchaseOrder> 
         return orderDetails;
     }
 
-    private PurchaseOrder createPurchaseOrder ( List<PurchaseOrderDetail> listDetails, Provider provider, String orderNumber) {
+    private PurchaseOrder createPurchaseOrder ( List<PurchaseOrderDetail> listDetails, Provider provider) {
+        String generatedString = RandomStringUtils.randomAlphanumeric(12);
         PurchaseOrder purchase = new PurchaseOrder();
         purchase.setPurchaseOrderDetailList(purchaseOrderDetailService.saveAll(listDetails));
-        purchase.setOrderNumber(orderNumber);
+        purchase.setOrderNumber(generatedString);
         purchase.setDate(Date.from(Instant.now()));
         purchase.setState(PurchaseOrderState.PEN);
         purchase.setReceivedType(PurchaseOrderReceivedType.NR);
