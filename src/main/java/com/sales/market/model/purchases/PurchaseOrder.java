@@ -46,7 +46,6 @@ public class PurchaseOrder extends ModelBase<PurchaseOrderDto> {
     private Provider provider;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "purchaseOrder", cascade = CascadeType.ALL)
-    @OrderBy("detailNumber asc")
     private List<PurchaseOrderDetail> purchaseOrderDetailList = new ArrayList<PurchaseOrderDetail>(0);
 
     @Column(nullable = false)

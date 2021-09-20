@@ -93,7 +93,6 @@ class PurchaseOrderPaymentServiceImplementationTest {
 
         Item item = createItem("test");
 
-//        detail.setPurchaseOrder(purchaseOrder);
         detail.setQuantity(new BigDecimal("10"));
         detail.setMeasureUnit(measureUnit);
         detail.setItem(item);
@@ -102,7 +101,7 @@ class PurchaseOrderPaymentServiceImplementationTest {
         purchaseOrderDetailService.save(detail);
         purchaseOrder.setPurchaseOrderDetailList(Arrays.asList());
 //        purchaseOrder.setDefaultDetail(detail);
-        return purchaseOrderService.saveAndFlush(purchaseOrder);
+        return purchaseOrderService.save(purchaseOrder);
     }
 
     public PurchaseOrderPaymentVo createPurchaseOrderPaymentVo (String orderNumberPurchase, String payAmount, Long purchaseOrderId) {
