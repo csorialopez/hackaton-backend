@@ -4,7 +4,6 @@ import com.sales.market.exception.purchases.GenericException;
 import com.sales.market.model.Item;
 import com.sales.market.model.purchases.*;
 import com.sales.market.service.ItemServiceImpl;
-import com.sales.market.service.PurchaseOrderServiceImpl;
 import com.sales.market.vo.PurchaseOrderPaymentVo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -31,6 +32,6 @@ public class ProviderItem extends ModelBase<ProviderItemDto> {
     @OneToOne(targetEntity = MeasureUnit.class)
     private MeasureUnit measureUnit;
 
-    private Double price;
+    private BigDecimal price;
 
 }

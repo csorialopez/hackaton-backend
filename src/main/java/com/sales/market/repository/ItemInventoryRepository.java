@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface ItemInventoryRepository extends GenericRepository<ItemInventory> {
     @Query("SELECT items FROM ItemInventory items"
-            +" WHERE items.lowerBoundThreshold <= items.stockQuantity")
+            +" WHERE items.stockQuantity <= items.lowerBoundThreshold")
     List<ItemInventory> geItemsLowerBoundery();
 }

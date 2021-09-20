@@ -1,5 +1,6 @@
 package com.sales.market.model.purchases;
 
+import com.sales.market.dto.purchases.PurchaseOrderDto;
 import com.sales.market.model.ModelBase;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +14,8 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-public class PurchaseOrder extends ModelBase {
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = "orderNumber")})
+public class PurchaseOrder extends ModelBase<PurchaseOrderDto> {
 
     private String orderNumber;
 

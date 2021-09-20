@@ -8,7 +8,6 @@ import com.sales.market.model.purchases.*;
 import com.sales.market.repository.purchases.PurchaseOrderPaymentRepository;
 import com.sales.market.repository.GenericRepository;
 import com.sales.market.service.GenericServiceImpl;
-import com.sales.market.service.PurchaseOrderService;
 import com.sales.market.vo.PurchaseOrderPaymentVo;
 import org.springframework.stereotype.Service;
 
